@@ -9,7 +9,12 @@ app = Flask(__name__)
 CORS(app)
 
 # Load sentiment analysis model
+# Verify the sentiment analysis model
 analyzer = SentimentAnalyzer()
+sample_review = "This product is amazing! The quality exceeded my expectations."
+sentiment, probabilities = analyzer.predict(sample_review)
+print(f"Sample review sentiment: {sentiment}, probabilities: {probabilities}")
+
 
 @app.route("/")
 def index():
