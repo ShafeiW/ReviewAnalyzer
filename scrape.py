@@ -24,61 +24,51 @@ def load_cookies(driver, cookies_file):
         print("Cookies file not found.")
 
 def login_to_amazon(driver):
-    """Automate the login process with more debugging."""
     driver.get("https://www.amazon.ca/ap/signin")
     try:
-        # Wait for the email input field
-        email_field = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.ID, "ap_email_login"))
+        print("Navigating to login page...")
+        with open("login_page_source.html", "w", encoding="utf-8") as f:
+            f.write(driver.page_source)
+        driver.save_screenshot("login_page.png")
+        
+        email_field = WebDriverWait(driver, 20).until(
+            EC.presence_of_element_located((By.ID, "ap_email"))
         )
         email_field.send_keys("shafeitest9@example.com")
         print("Email entered successfully.")
 
-        # Wait for and click the "Continue" button
-        continue_button = WebDriverWait(driver, 10).until(
+        continue_button = WebDriverWait(driver, 20).until(
             EC.element_to_be_clickable((By.ID, "continue"))
         )
         continue_button.click()
         print("Clicked 'Continue' button.")
 
-        # Save page source after email entry
-        with open("post_email_page_source.html", "w", encoding="utf-8") as f:
-            f.write(driver.page_source)
-
-        # Wait for the password input field
-        password_field = WebDriverWait(driver, 10).until(
+        password_field = WebDriverWait(driver, 20).until(
             EC.presence_of_element_located((By.ID, "ap_password"))
         )
         password_field.send_keys("PasswordTest360")
         print("Password entered successfully.")
 
-        # Wait for and click the "Sign-In" button
-        sign_in_button = WebDriverWait(driver, 10).until(
+        sign_in_button = WebDriverWait(driver, 20).until(
             EC.element_to_be_clickable((By.ID, "signInSubmit"))
         )
         sign_in_button.click()
         print("Clicked 'Sign-In' button.")
 
-        # Save page source after password entry
-        with open("post_password_page_source.html", "w", encoding="utf-8") as f:
+        # Save the page source for debugging
+        driver.save_screenshot("post_login.png")
+        with open("post_login_source.html", "w", encoding="utf-8") as f:
             f.write(driver.page_source)
-
-        time.sleep(5)
-        print("Login successful!")
+        print("Login completed.")
 
     except Exception as e:
         print(f"Error during login: {e}")
-        # Save login page source for debugging
-        with open("login_debug_page_source.html", "w", encoding="utf-8") as f:
-            f.write(driver.page_source)
-        print("Saved login debug page source to 'login_debug_page_source.html'.")
-
+        driver.save_screenshot("login_error.png")
+        raise
 
 
 def scrape_amazon_reviews(product_url, num_pages=1, cookies_file="cookies.pkl"):
     options = Options()
-    # Disable headless mode for debugging
-    # options.add_argument("--headless")
     options.add_argument("--disable-gpu")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
@@ -93,9 +83,7 @@ def scrape_amazon_reviews(product_url, num_pages=1, cookies_file="cookies.pkl"):
             driver.get("https://www.amazon.ca")
             load_cookies(driver, cookies_file)
             driver.refresh()
-            with open("post_cookie_page_source.html", "w", encoding="utf-8") as f:
-                f.write(driver.page_source)
-            print("Saved post-cookie page source to 'post_cookie_page_source.html'.")
+            print("Cookies loaded and refreshed.")
         else:
             # Perform login and save cookies
             login_to_amazon(driver)
@@ -108,14 +96,14 @@ def scrape_amazon_reviews(product_url, num_pages=1, cookies_file="cookies.pkl"):
             time.sleep(5)
 
             # Save review page source for debugging
-            with open("review_page_source.html", "w", encoding="utf-8") as f:
+            with open(f"review_page_source_{page}.html", "w", encoding="utf-8") as f:
                 f.write(driver.page_source)
-            print("Saved review page source to 'review_page_source.html'.")
+            print(f"Saved review page source for page {page} to 'review_page_source_{page}.html'.")
 
             # Extract reviews
             review_elements = driver.find_elements(By.CSS_SELECTOR, "span[data-hook='review-body']")
             if not review_elements:
-                print(f"No reviews found on page {page}.")
+                print(f"No reviews found on page {page}. Exiting.")
                 break
 
             for element in review_elements:
@@ -126,15 +114,15 @@ def scrape_amazon_reviews(product_url, num_pages=1, cookies_file="cookies.pkl"):
 
     except Exception as e:
         print(f"Error during scraping: {e}")
+        driver.save_screenshot("scraping_error.png")
     
     finally:
         driver.quit()
 
     return reviews
 
-
 if __name__ == "__main__":
-    product_url = "https://www.amazon.ca/product-reviews/B0BMQJWBDM/ref=cm_cr_getr_d_paging_btm_next_1?ie=UTF8&reviewerType=all_reviews"
+    product_url = "https://www.amazon.ca/product-reviews/B07CRG94G3/ref=cm_cr_arp_d_viewopt_sr?ie=UTF8&filterByStar=all_stars&reviewerType=all_reviews&pageNumber=1"
     num_pages = 5
 
     reviews = scrape_amazon_reviews(product_url, num_pages=num_pages)
