@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Newegg Review Analyzer</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <h1>Newegg PC Part Review Analyzer</h1>
+    <form action="/analyze" method="post">
+        <label for="product_url">Enter Newegg Product URL:</label>
+        <input type="text" id="product_url" name="product_url" required>
+        <button type="submit">Analyze Reviews</button>
+    </form>
+</body>
+</html>
