@@ -92,7 +92,7 @@ def login_to_amazon(driver):
 
 
 
-def scrape_amazon_reviews(product_url, num_pages=1, cookies_file="cookies.pkl"):
+def scrape_amazon_reviews(product_url, num_pages=5, cookies_file="cookies.pkl"):
     options = Options()
     options.add_argument("--disable-gpu")
     options.add_argument("--no-sandbox")
@@ -103,38 +103,41 @@ def scrape_amazon_reviews(product_url, num_pages=1, cookies_file="cookies.pkl"):
     reviews = []
 
     try:
+        # Load cookies or log in
         if os.path.exists(cookies_file):
-            driver.get("https://www.amazon.com/ap/signin?openid.pape.max_auth_age=0&openid.return_to=https%3A%2F%2Fwww.amazon.com%2F%3Fref_%3Dnav_signin&openid.identity=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.assoc_handle=usflex&openid.mode=checkid_setup&openid.claimed_id=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.ns=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0")
+            driver.get("https://www.amazon.com")
             load_cookies(driver, cookies_file, ".amazon.com")
             driver.refresh()
             time.sleep(5)
-            with open("post_cookie_debug.html", "w", encoding="utf-8") as f:
-                f.write(driver.page_source)
-            print("Saved post-cookie debug page source.")
+            print("Cookies loaded successfully.")
             if "ap/signin" in driver.current_url:
                 print("Session invalid. Reattempting login.")
                 login_to_amazon(driver)
                 save_cookies(driver, cookies_file)
-                print("Cookies refreshed and saved.")
         else:
             login_to_amazon(driver)
             save_cookies(driver, cookies_file)
             print("Cookies saved successfully.")
 
         for page in range(1, num_pages + 1):
-            url = f"{product_url}&pageNumber={page}"
+            # Construct the URL for each page
+            if page == 1:
+                url = product_url
+            else:
+                url = product_url.replace(
+                    "ref=cm_cr_arp_d_viewopt_srt",
+                    f"ref=cm_cr_arp_d_paging_btm_next_{page}"
+                ).replace("pageNumber=1", f"pageNumber={page}")
+            
+            print(f"Navigating to page {page}: {url}")
             driver.get(url)
             time.sleep(5)
 
+            # Scroll to ensure all content loads
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             time.sleep(3)
-            WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, "span[data-hook='review-body']"))
-            )
-            with open(f"review_page_source_{page}.html", "w", encoding="utf-8") as f:
-                f.write(driver.page_source)
-            print(f"Saved review page source for page {page}.")
 
+            # Extract reviews
             review_elements = driver.find_elements(By.CSS_SELECTOR, "span[data-hook='review-body']")
             if not review_elements:
                 print(f"No reviews found on page {page}.")
@@ -144,7 +147,10 @@ def scrape_amazon_reviews(product_url, num_pages=1, cookies_file="cookies.pkl"):
                 reviews.append(element.text.strip())
 
             print(f"Scraped {len(review_elements)} reviews from page {page}.")
-            time.sleep(2)
+
+            # Save page source for debugging
+            with open(f"review_page_source_{page}.html", "w", encoding="utf-8") as f:
+                f.write(driver.page_source)
 
     except Exception as e:
         print(f"Error during scraping: {e}")
@@ -157,8 +163,10 @@ def scrape_amazon_reviews(product_url, num_pages=1, cookies_file="cookies.pkl"):
     return reviews
 
 
+
+
 if __name__ == "__main__":
-    product_url = "https://www.amazon.com/product-reviews/B07GBZ4Q68/ref=cm_cr_arp_d_viewopt_sr?ie=UTF8&filterByStar=all_stars&reviewerType=all_reviews&pageNumber=1#reviews-filter-bar"
+    product_url = "https://www.amazon.com/product-reviews/B0B16HXVVQ/ref=cm_cr_arp_d_viewopt_srt?ie=UTF8&filterByStar=all_stars&reviewerType=all_reviews&pageNumber=1"
     num_pages = 5
 
     reviews = scrape_amazon_reviews(product_url, num_pages=num_pages)
