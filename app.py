@@ -22,38 +22,47 @@ def index():
 
 @app.route("/analyze", methods=["POST"])
 def analyze_reviews():
+    print("Analyze route hit")  # Debugging log
     data = request.json
-    url = data.get("url")
-    
-    # Scrape reviews
-    reviews = scrape_amazon_reviews(url)
-    if not reviews:
-        return jsonify({"error": "No reviews found or invalid URL."}), 400
+    print(f"Received data: {data}")  # Debugging log
+    """Scrape and analyze reviews."""
+    try:
+        data = request.json
+        print(f"Received data: {data}")  # Debugging log
 
-    # Analyze sentiment
-    sentiment_results = {"positive": 0, "neutral": 0, "negative": 0}
-    keyword_counter = Counter()
+        product_url = data.get("url")
+        num_pages = int(data.get("num_pages", 1))
+        if not product_url:
+            return jsonify({"error": "Product URL is required"}), 400
 
-    for review in reviews:
-        sentiment, _ = analyzer.predict(review)
-        if sentiment == 0:
-            sentiment_results["negative"] += 1
-        elif sentiment == 1:
-            sentiment_results["neutral"] += 1
-        else:
-            sentiment_results["positive"] += 1
-        
-        # Extract keywords
-        keywords = extract_keywords(review)
-        keyword_counter.update(keywords)
+        # Scrape reviews
+        reviews = scrape_amazon_reviews(product_url, num_pages)
+        if not reviews:
+            return jsonify({"error": "No reviews found or scraping failed."}), 400
 
-    # Format results
-    top_keywords = keyword_counter.most_common(10)
-    return jsonify({
-        "sentiments": sentiment_results,
-        "keywords": top_keywords,
-        "reviews": reviews
-    })
+        # Analyze sentiment
+        sentiment_counts = {"positive": 0, "neutral": 0, "negative": 0}
+        analyzed_reviews = []
+
+        for review in reviews:
+            sentiment, _ = analyzer.predict(review)
+            if sentiment == 0:
+                sentiment_counts["negative"] += 1
+            elif sentiment == 1:
+                sentiment_counts["neutral"] += 1
+            else:
+                sentiment_counts["positive"] += 1
+            analyzed_reviews.append({"review": review, "sentiment": sentiment})
+
+        # Return results
+        return jsonify({
+            "sentiment_counts": sentiment_counts,
+            "reviews": analyzed_reviews
+        })
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify({"error": "Internal server error"}), 500
+
 
 
 def extract_keywords(text):
