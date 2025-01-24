@@ -3,13 +3,11 @@ from sentiment_model import SentimentAnalyzer
 from flask_cors import CORS
 import re
 from scrape import scrape_amazon_reviews
-from collections import Counter
 
 app = Flask(__name__)
 CORS(app)
 
 # Load sentiment analysis model
-# Verify the sentiment analysis model
 analyzer = SentimentAnalyzer()
 sample_review = "This product is amazing! The quality exceeded my expectations."
 sentiment, probabilities = analyzer.predict(sample_review)
@@ -18,14 +16,13 @@ print(f"Sample review sentiment: {sentiment}, probabilities: {probabilities}")
 
 @app.route("/")
 def index():
+    """Render the homepage."""
     return render_template("index.html")
+
 
 @app.route("/analyze", methods=["POST"])
 def analyze_reviews():
-    print("Analyze route hit")  # Debugging log
-    data = request.json
-    print(f"Received data: {data}")  # Debugging log
-    """Scrape and analyze reviews."""
+    print("Analyze endpoint hit.")  # Debugging log
     try:
         data = request.json
         print(f"Received data: {data}")  # Debugging log
@@ -45,18 +42,19 @@ def analyze_reviews():
         analyzed_reviews = []
 
         for review in reviews:
-            sentiment, _ = analyzer.predict(review)
-            if sentiment == 0:
-                sentiment_counts["negative"] += 1
-            elif sentiment == 1:
-                sentiment_counts["neutral"] += 1
-            else:
-                sentiment_counts["positive"] += 1
-            analyzed_reviews.append({"review": review, "sentiment": sentiment})
+            sentiment, probabilities = analyzer.predict(review)
+            probabilities = [float(prob) for prob in probabilities[0]]  # Convert to Python-native floats
+            sentiment_label = "positive" if sentiment == 2 else "neutral" if sentiment == 1 else "negative"
+            sentiment_counts[sentiment_label] += 1
+            analyzed_reviews.append({
+                "review": review,
+                "sentiment": int(sentiment),  # Convert to Python-native int
+                "probabilities": probabilities  # JSON-serializable list of floats
+            })
 
         # Return results
         return jsonify({
-            "sentiment_counts": sentiment_counts,
+            "sentiment_counts": {k: int(v) for k, v in sentiment_counts.items()},  # Ensure counts are Python ints
             "reviews": analyzed_reviews
         })
     except Exception as e:
@@ -65,11 +63,6 @@ def analyze_reviews():
 
 
 
-def extract_keywords(text):
-    words = re.findall(r"\b\w+\b", text.lower())
-    common_words = set(["the", "is", "and", "it", "to", "of", "a", "in", "for", "on", "with", "as", "this", "that"])
-    keywords = [word for word in words if word not in common_words]
-    return keywords
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -9,10 +9,19 @@
 <body>
     <div class="container">
         <h1>Amazon Review Analyzer</h1>
+        <noscript>
+            <p style="color: red;">This application requires JavaScript to function. Please enable JavaScript in your browser.</p>
+        </noscript>
         <form id="review-form">
+            <label for="url">Amazon Product Review URL:</label>
             <input type="url" id="url" placeholder="Enter Amazon product URL" required>
+
+            <label for="num_pages">Number of Pages to Scrape:</label>
+            <input type="number" id="num_pages" min="1" placeholder="Enter number of pages" required>
+
             <button type="submit">Analyze</button>
         </form>
+        <div id="loading" style="display: none;">Analyzing reviews... Please wait.</div>
         <div id="results"></div>
     </div>
     <script src="/static/script.js"></script>
