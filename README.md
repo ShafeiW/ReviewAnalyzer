@@ -130,16 +130,6 @@ PartReviewAnalyzer/
   - Stratified sampling
   - Cross-validation
 
-## **Features**
-- Real-time review scraping
-- Sentiment analysis (1-5 stars)
-- Confidence scoring
-- Batch processing
-- Responsive web interface
-- Detailed statistical analysis
-- Error handling and retry logic
-- Mobile-friendly design
-
 ## **Future Improvements**
 - Add multi-language support
 - Implement aspect-based sentiment analysis
@@ -152,6 +142,12 @@ PartReviewAnalyzer/
 ## License
 MIT License
 
+## Screenshots
+### Main Interface
+![Main Interface](screenshots/main_interface.png)
+
+### Analysis Results
+![Analysis Results](screenshots/analysis_results.png)
 ## Author
 Shafei Waqar
 
