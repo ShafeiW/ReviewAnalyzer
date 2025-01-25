@@ -70,9 +70,10 @@ pip install -r requirements.txt
 ```
 
 ### **4. Set Up Environment Variables**
-Create a .env file in the project root directory and add your :
+Create a .env file in the project root directory and add your amazon credentials:
 ```bash
-
+AMAZON_EMAIL='your_email@example.com'
+AMAZON_PASSWORD='your_password'
 ```
 
 ### **5. Run the Application**
@@ -93,6 +94,7 @@ python app.py
    - Statistical breakdown
 
 ## Project Structure
+```bash
 PartReviewAnalyzer/
 ├── app.py                 # Flask application
 ├── sentiment_model.py     # Fine-tuned BERT model
@@ -102,9 +104,17 @@ PartReviewAnalyzer/
 │   └── script.js         # Frontend logic
 └── templates/            # HTML templates
     └── index.html        # Main page
+├── data/
+│   ├── amazon_reviews_train.csv
+│   └── amazon_reviews_test.csv
+├── .env
+├── requirements.txt
+├── README.md
+├── .gitignore
+```
 
 ## Model Training Details
-- **Dataset**: Amazon product reviews
+- **Dataset**: Amazon Polarity Dataset
 - **Training Process**:
   - Fine-tuned BERT model
   - AdamW optimizer
