@@ -4,17 +4,17 @@ from flask_cors import CORS
 import logging
 from scrape import scrape_amazon_reviews
 
-# Set up logging
+# Set up logging.
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 CORS(app)
 
-# Load sentiment analysis model
+# Load sentiment analysis model.
 try:
     analyzer = SentimentAnalyzer()
-    # Test the model
+    # Test the model.
     sample_review = "This product is amazing! The quality exceeded my expectations."
     rating, confidence, probabilities = analyzer.predict(sample_review)
     logger.info(f"Model test - Rating: {rating}/5, Confidence: {confidence:.2f}")
@@ -32,7 +32,7 @@ def analyze_reviews():
     """Analyze reviews from an Amazon product URL."""
     logger.info("Analyze endpoint hit")
     
-    # Initialize all variables at the start
+    # Initialize variables.
     sentiment_counts = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
     analyzed_reviews = []
     total_confidence = 0
@@ -48,7 +48,7 @@ def analyze_reviews():
         if not product_url:
             return jsonify({"error": "Product URL is required"}), 400
 
-        # Scrape reviews
+        # Scrape reviews.
         logger.info(f"Scraping {num_pages} pages of reviews from {product_url}")
         reviews_data = scrape_amazon_reviews(product_url, num_pages)
         
@@ -58,22 +58,22 @@ def analyze_reviews():
 
         logger.info(f"Processing {len(reviews_data)} reviews")
 
-        # Process each review
+        # Process each review.
         for review_text in reviews_data:
             if not review_text or not isinstance(review_text, str):
                 continue
 
-            # Analyze sentiment
+            # Analyze sentiment.
             try:
                 rating, confidence, probabilities = analyzer.predict(review_text)
                 
-                if rating is not None:  # Only count confident predictions
+                if rating is not None:  # Only count confident predictions.
                     sentiment_counts[rating] += 1
                     total_confidence += confidence
                     processed_reviews += 1
                     
                     analyzed_reviews.append({
-                        "review_text": review_text[:500],  # Limit review text length in response
+                        "review_text": review_text[:500],  # Limit review text length in response.
                         "predicted_rating": int(rating),
                         "confidence": float(confidence),
                         "probabilities": [float(p) for p in probabilities] if probabilities is not None else None
@@ -82,7 +82,7 @@ def analyze_reviews():
                 logger.error(f"Error analyzing review: {str(e)}")
                 continue
 
-        # Calculate statistics
+        # Calculate statistics.
         if processed_reviews > 0:
             avg_confidence = total_confidence / processed_reviews
             avg_rating = sum(k * v for k, v in sentiment_counts.items()) / processed_reviews
@@ -90,7 +90,7 @@ def analyze_reviews():
             avg_confidence = 0
             avg_rating = 0
 
-        # Prepare response
+        # Prepare response..
         response = {
             "sentiment_summary": {
                 "very_negative": sentiment_counts[1],
@@ -114,7 +114,7 @@ def analyze_reviews():
         return jsonify({
             "error": "Internal server error",
             "message": str(e),
-            "sentiment_counts": sentiment_counts,  # Include for debugging
+            "sentiment_counts": sentiment_counts,  # Include for debugging.
             "processed_reviews": processed_reviews
         }), 500
 

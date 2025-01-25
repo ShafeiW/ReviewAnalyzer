@@ -40,44 +40,44 @@ def load_cookies(driver, cookies_file, target_domain):
 
 def login_to_amazon(driver):
     """Automate the login process with explicit waits for each step."""
-    driver.get("https://www.amazon.com/ap/signin?openid.pape.max_auth_age=0&openid.return_to=https%3A%2F%2Fwww.amazon.com%2F%3Fref_%3Dnav_signin&openid.identity=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.assoc_handle=usflex&openid.mode=checkid_setup&openid.claimed_id=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.ns=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0")
+    driver.get(os.getenv("AMAZON_LOGIN_URL"))
     try:
-        # Wait for email input field
+        # Wait for email input field.
         email_field = WebDriverWait(driver, 15).until(
             EC.presence_of_element_located((By.ID, "ap_email"))
         )
         email_field.send_keys(os.getenv("AMAZON_EMAIL"))
         print("Email entered successfully.")
 
-        # Wait for and click "Continue" button
+        # Wait for and click "Continue" button.
         continue_button = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.ID, "continue"))
         )
         continue_button.click()
         print("Clicked 'Continue' button.")
 
-        # Save page source for debugging
+        # Save page source for debugging.
         with open("post_email_debug.html", "w", encoding="utf-8") as f:
             f.write(driver.page_source)
 
-        # Wait for password input field
+        # Wait for password input field.
         password_field = WebDriverWait(driver, 15).until(
             EC.presence_of_element_located((By.ID, "ap_password"))
         )
         password_field.send_keys(os.getenv("AMAZON_PASSWORD"))
         print("Password entered successfully.")
 
-        # Wait for and click "Sign-In" button
+        # Wait for and click "Sign-In" button.
         sign_in_button = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.ID, "signInSubmit"))
         )
         sign_in_button.click()
         print("Clicked 'Sign-In' button.")
 
-        # Complete Captcha manually
+        # Complete Captcha manually if required.
         time.sleep(10)
 
-        # Save post-login page source for verification
+        # Save post-login page source for verification.
         with open("post_login_debug.html", "w", encoding="utf-8") as f:
             f.write(driver.page_source)
 
@@ -160,6 +160,7 @@ def scrape_amazon_reviews(product_url, num_pages=5, cookies_file="cookies.pkl"):
 
 
 if __name__ == "__main__":
+    """ Scrape Test """
     product_url = "https://www.amazon.com/product-reviews/B0B16HXVVQ/ref=cm_cr_arp_d_viewopt_srt?ie=UTF8&filterByStar=all_stars&reviewerType=all_reviews&pageNumber=1"
     num_pages = 5
 

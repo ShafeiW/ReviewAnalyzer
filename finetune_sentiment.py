@@ -51,20 +51,20 @@ def compute_metrics(eval_pred):
     }
 
 def main():
-    # Check GPU availability
+    # Check GPU availability.
     device = check_gpu()
     
-    # Configuration
+    # Configuration.
     MODEL_NAME = "nlptown/bert-base-multilingual-uncased-sentiment"
     TRAIN_DATA_PATH = "data/amazon_reviews_train.csv"
     TEST_DATA_PATH = "data/amazon_reviews_test.csv"
     OUTPUT_DIR = "./sentiment_model_finetuned"
     
-    # Create necessary directories
+    # Create necessary directories.
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     os.makedirs('logs', exist_ok=True)
     
-    # Initialize tokenizer and model
+    # Initialize tokenizer and model.
     logger.info("Loading tokenizer and model...")
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
     model = AutoModelForSequenceClassification.from_pretrained(
@@ -73,20 +73,20 @@ def main():
         problem_type="single_label_classification"
     )
     
-    # Move model to GPU if available
+    # Move model to GPU if available.
     model = model.to(device)
     logger.info(f"Model moved to: {next(model.parameters()).device}")
 
-    # Load and prepare data
+    # Load and prepare data.
     logger.info("Loading data...")
     train_df = pd.read_csv(TRAIN_DATA_PATH)
     val_df = pd.read_csv(TEST_DATA_PATH)
     
-    # Convert to HuggingFace datasets
+    # Convert to HuggingFace datasets.
     train_dataset = HFDataset.from_pandas(train_df)
     val_dataset = HFDataset.from_pandas(val_df)
 
-    # Tokenize datasets
+    # Tokenize datasets.
     logger.info("Tokenizing datasets...")
     train_dataset = train_dataset.map(
         lambda x: tokenize_function(x, tokenizer),
@@ -99,11 +99,11 @@ def main():
         remove_columns=val_dataset.column_names
     )
 
-    # Set format for pytorch
+    # Set format for pytorch.
     train_dataset.set_format('torch', columns=['input_ids', 'attention_mask', 'labels'])
     val_dataset.set_format('torch', columns=['input_ids', 'attention_mask', 'labels'])
 
-    # Training arguments optimized for GPU
+    # Training arguments optimized for GPU.
     training_args = TrainingArguments(
         output_dir=OUTPUT_DIR,
         num_train_epochs=3,
@@ -120,14 +120,14 @@ def main():
         metric_for_best_model="f1_macro",
         greater_is_better=True,
         learning_rate=2e-5,
-        gradient_accumulation_steps=1,  # No need for accumulation with larger batch size
-        fp16=True,  # Enable mixed precision training
+        gradient_accumulation_steps=1,  # No need for accumulation with larger batch size.
+        fp16=True,  # Enable mixed precision training.
         report_to="none",
-        dataloader_num_workers=4,  # Increased for faster data loading
+        dataloader_num_workers=4,  # Increased for faster data loading.
         dataloader_pin_memory=True,
     )
 
-    # Initialize trainer
+    # Initialize trainer.
     logger.info("Initializing trainer...")
     trainer = Trainer(
         model=model,
@@ -138,7 +138,7 @@ def main():
         callbacks=[EarlyStoppingCallback(early_stopping_patience=3)]
     )
 
-    # Train the model
+    # Train the model.
     logger.info("Starting training...")
     try:
         if torch.cuda.is_available():
@@ -148,17 +148,17 @@ def main():
         logger.error(f"Error during training: {str(e)}")
         raise e
 
-    # Save the final model
+    # Save the final model.
     logger.info(f"Saving model to {OUTPUT_DIR}")
     trainer.save_model(OUTPUT_DIR)
     tokenizer.save_pretrained(OUTPUT_DIR)
 
-    # Evaluate the model
+    # Evaluate the model.
     logger.info("Evaluating model...")
     eval_results = trainer.evaluate()
     logger.info(f"Evaluation results: {eval_results}")
     
-    # Save evaluation results
+    # Save evaluation results.
     with open(os.path.join(OUTPUT_DIR, 'eval_results.txt'), 'w') as f:
         f.write(str(eval_results))
 

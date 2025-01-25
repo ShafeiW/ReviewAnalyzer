@@ -8,7 +8,7 @@ document.getElementById("review-form").addEventListener("submit", async (event) 
     resultsDiv.innerHTML = "<p>Analyzing reviews... This may take a moment.</p>";
 
     try {
-        // Send POST request to the backend
+        // Send POST request to the backend.
         const response = await fetch("/analyze", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -17,15 +17,15 @@ document.getElementById("review-form").addEventListener("submit", async (event) 
 
         const data = await response.json();
 
-        // Handle errors
+        // Handle errors.
         if (!response.ok || data.error) {
             throw new Error(data.error || data.message || 'An error occurred');
         }
 
-        // Extract data from the response
+        // Extract data from the response.
         const { sentiment_summary, analyzed_reviews, total_reviews, processed_reviews } = data;
 
-        // Create the results HTML
+        // Create the results HTML.
         const resultsHTML = `
             <h2>Sentiment Analysis Results</h2>
             <div class="summary-stats">
