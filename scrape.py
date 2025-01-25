@@ -46,7 +46,7 @@ def login_to_amazon(driver):
         email_field = WebDriverWait(driver, 15).until(
             EC.presence_of_element_located((By.ID, "ap_email"))
         )
-        email_field.send_keys("shafeitest9@gmail.com")
+        email_field.send_keys(os.getenv("AMAZON_EMAIL"))
         print("Email entered successfully.")
 
         # Wait for and click "Continue" button
@@ -64,7 +64,7 @@ def login_to_amazon(driver):
         password_field = WebDriverWait(driver, 15).until(
             EC.presence_of_element_located((By.ID, "ap_password"))
         )
-        password_field.send_keys("PasswordTest360")
+        password_field.send_keys(os.getenv("AMAZON_PASSWORD"))
         print("Password entered successfully.")
 
         # Wait for and click "Sign-In" button
@@ -148,15 +148,9 @@ def scrape_amazon_reviews(product_url, num_pages=5, cookies_file="cookies.pkl"):
 
             print(f"Scraped {len(review_elements)} reviews from page {page}.")
 
-            # Save page source for debugging
-            with open(f"review_page_source_{page}.html", "w", encoding="utf-8") as f:
-                f.write(driver.page_source)
-
     except Exception as e:
         print(f"Error during scraping: {e}")
         driver.save_screenshot("error_screenshot.png")
-        with open("error_debug_page.html", "w", encoding="utf-8") as f:
-            f.write(driver.page_source)
     finally:
         driver.quit()
 

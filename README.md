@@ -15,7 +15,7 @@ A deep learning-powered web application that performs sentiment analysis on Amaz
 
 ### Model Architecture
 - Base: BERT (bert-base-multilingual-uncased-sentiment)
-- Fine-tuned on Amazon product reviews
+- Fine-tuned on Amazon product reviews from Amazon Polarity Dataset
 - Output: 5-class sentiment classification (1-5 stars)
 - Training Duration: ~30 minutes on RTX 3070 Ti
 
@@ -27,11 +27,23 @@ A deep learning-powered web application that performs sentiment analysis on Amaz
 - Training Samples/Second: 16.154
 
 ### Tech Stack
-- **Backend**: Python, Flask, PyTorch
-- **Frontend**: HTML5, CSS3, JavaScript
-- **ML/DL**: Transformers, BERT
-- **Web Scraping**: Selenium, BeautifulSoup4
-- **Development**: Git, VS Code
+- **Frontend**:
+  - HTML5, CSS3
+  - JavaScript
+
+- **Backend**:
+  - Python, Flask 
+  - PyTorch
+
+- **Model/ML**:
+    - Transformers, BERT
+
+- **Web Scraping**:
+    - Selenium, BeautifulSoup4
+
+- **Development**:
+    - Git, VS Code
+
 
 ## Installation
 
@@ -40,11 +52,35 @@ A deep learning-powered web application that performs sentiment analysis on Amaz
 - CUDA-compatible GPU (recommended)
 - Chrome WebDriver for Selenium
 
-### Setup
-1. Clone repository
-2. Create virtual environment (optional but recommended)
-3. Install dependencies from requirements.txt
-4. Run app.py
+### **1. Clone the Repository**
+```bash
+git clone https://github.com/ShafeiW/PartReviewAnalyzer.git
+```
+
+### **2. Create a Virtual Environment**
+```bash
+python -m venv venv
+.\venv\Scripts\activate
+```
+
+### **3. Install Dependencies**
+Manually install the required Python packages:
+```bash
+pip install -r requirements.txt
+```
+
+### **4. Set Up Environment Variables**
+Create a .env file in the project root directory and add your :
+```bash
+
+```
+
+### **5. Run the Application**
+```bash
+python app.py 
+```
+
+### **6. Navigate to local host: http://127.0.0.1:5000**
 
 ## Usage
 1. Navigate to `http://localhost:5000` in your browser
