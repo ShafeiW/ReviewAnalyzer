@@ -3,27 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amazon Review Analyzer</title>
-    <link rel="stylesheet" href="/static/styles.css">
+    <title>Amazon Review Sentiment Analyzer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
     <div class="container">
-        <h1>Amazon Review Analyzer</h1>
-        <noscript>
-            <p style="color: red;">This application requires JavaScript to function. Please enable JavaScript in your browser.</p>
-        </noscript>
-        <form id="review-form">
-            <label for="url">Amazon Product Review URL:</label>
-            <input type="url" id="url" placeholder="Enter Amazon product URL" required>
+        <header>
+            <h1>Amazon Review Analyzer</h1>
+            <p class="subtitle">Powered by Fine-tuned BERT (92.4% Accuracy)</p>
+        </header>
 
-            <label for="num_pages">Number of Pages to Scrape:</label>
-            <input type="number" id="num_pages" min="1" placeholder="Enter number of pages" required>
+        <main>
+            <div class="card">
+                <form id="review-form" class="analysis-form">
+                    <div class="form-group">
+                        <label for="url">Amazon Product Reviews URL</label>
+                        <input type="url" id="url" name="url" required 
+                               placeholder="https://www.amazon.com/product-reviews/...">
+                        <small class="help-text">Paste the URL from the product's reviews page</small>
+                    </div>
 
-            <button type="submit">Analyze</button>
-        </form>
-        <div id="loading" style="display: none;">Analyzing reviews... Please wait.</div>
-        <div id="results"></div>
+                    <div class="form-group">
+                        <label for="num_pages">Number of Pages to Analyze</label>
+                        <select id="num_pages" name="num_pages">
+                            <option value="1">1 page (~10 reviews)</option>
+                            <option value="2">2 pages (~20 reviews)</option>
+                            <option value="3">3 pages (~30 reviews)</option>
+                            <option value="5">5 pages (~50 reviews)</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="submit-btn">
+                        <span class="btn-text">Analyze Reviews</span>
+                        <span class="btn-icon">→</span>
+                    </button>
+                </form>
+            </div>
+
+            <div id="results" class="results-container">
+                <!-- Results will be inserted here by JavaScript -->
+            </div>
+        </main>
+
+        <footer>
+            <p>Model Performance: 92.4% Accuracy | 0.939 F1 Score</p>
+            <p class="footer-note">Uses BERT fine-tuned on Amazon reviews</p>
+        </footer>
     </div>
-    <script src="/static/script.js"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
