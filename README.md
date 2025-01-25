@@ -1,9 +1,11 @@
 # Amazon Review Sentiment Analyzer
 
-## Overview
+## **Overview**
 A deep learning-powered web application that performs sentiment analysis on Amazon product reviews using a fine-tuned BERT model. The system scrapes reviews from Amazon product pages and provides detailed sentiment analysis with confidence scores and rating predictions.
 
-## Key Features
+---
+
+## **Key Features**
 - Custom fine-tuned BERT model (92.4% validation accuracy)
 - Real-time Amazon review scraping
 - Sentiment analysis with confidence scoring
@@ -11,22 +13,24 @@ A deep learning-powered web application that performs sentiment analysis on Amaz
 - Batch review processing
 - Detailed sentiment breakdown and statistics
 
-## Technical Details
+---
 
-### Model Architecture
+## **Technical Details**
+
+### **Model Architecture**
 - Base: BERT (bert-base-multilingual-uncased-sentiment)
 - Fine-tuned on Amazon product reviews from Amazon Polarity Dataset
 - Output: 5-class sentiment classification (1-5 stars)
 - Training Duration: ~30 minutes on RTX 3070 Ti
 
-### Performance Metrics
+### **Performance Metrics**
 - Validation Accuracy: 92.4%
 - F1 Macro Score: 0.939
 - Validation Loss: 0.229
 - Training Loss: 0.286
 - Training Samples/Second: 16.154
 
-### Tech Stack
+### **Tech Stack**
 - **Frontend**:
   - HTML5, CSS3
   - JavaScript
@@ -45,9 +49,9 @@ A deep learning-powered web application that performs sentiment analysis on Amaz
     - Git, VS Code
 
 
-## Installation
+## **Installation**
 
-### Prerequisites
+### **Prerequisites**
 - Python 3.8+
 - CUDA-compatible GPU (recommended)
 - Chrome WebDriver for Selenium
@@ -83,7 +87,7 @@ python app.py
 
 ### **6. Navigate to local host: http://127.0.0.1:5000**
 
-## Usage
+## **Usage**
 1. Navigate to `http://localhost:5000` in your browser
 2. Enter an Amazon product reviews URL
 3. Select the number of pages to analyze (1-5)
@@ -93,7 +97,7 @@ python app.py
    - Individual review analysis
    - Statistical breakdown
 
-## Project Structure
+## **Project Structure**
 ```bash
 PartReviewAnalyzer/
 ├── app.py                 # Flask application
@@ -105,15 +109,15 @@ PartReviewAnalyzer/
 └── templates/            # HTML templates
     └── index.html        # Main page
 ├── data/
-│   ├── amazon_reviews_train.csv
-│   └── amazon_reviews_test.csv
-├── .env
-├── requirements.txt
-├── README.md
-├── .gitignore
+│   ├── amazon_reviews_train.csv  # Training data
+│   └── amazon_reviews_test.csv   # Testing data
+├── .env                         # Environment variables
+├── requirements.txt             # Dependencies
+├── README.md                    # This file
+├── .gitignore                   # Ignore files in git
 ```
 
-## Model Training Details
+## **Model Training Details**
 - **Dataset**: Amazon Polarity Dataset
 - **Training Process**:
   - Fine-tuned BERT model
@@ -126,7 +130,7 @@ PartReviewAnalyzer/
   - Stratified sampling
   - Cross-validation
 
-## Features
+## **Features**
 - Real-time review scraping
 - Sentiment analysis (1-5 stars)
 - Confidence scoring
@@ -136,7 +140,7 @@ PartReviewAnalyzer/
 - Error handling and retry logic
 - Mobile-friendly design
 
-## Future Improvements
+## **Future Improvements**
 - Add multi-language support
 - Implement aspect-based sentiment analysis
 - Add review summarization
@@ -144,9 +148,6 @@ PartReviewAnalyzer/
 - Add data visualization features
 - Implement caching for scraped reviews
 - Add user authentication
-
-## Contributing
-Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 MIT License
@@ -159,3 +160,5 @@ Shafei Waqar
 - BERT paper authors
 - Flask documentation
 - Selenium contributors
+- Amazon product reviews dataset
+- Amazon polarity dataset
